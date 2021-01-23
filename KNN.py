@@ -5,15 +5,13 @@ from numpy import ones
 from numpy import array
 from numpy import arange
 import math
-from scipy import stats
 from sklearn.utils import shuffle
 
+'''Jeferson Pontes'''
+'''https://github.com/Jefersonpontes13'''
 
-def length(x):
-    if len(x.shape) == 1:
-        return len(x)
 
-    return [len(x[n]) for n in range(x.shape[1])]
+'''Atributo: Média'''
 
 
 def mean(x):
@@ -21,6 +19,9 @@ def mean(x):
         return sum(x) / len(x)
 
     return [sum(x[n]) / x[n].shape[0] for n in range(x.shape[1])]
+
+
+'''Gera o atributo variância'''
 
 
 def variance(x):
@@ -40,11 +41,17 @@ def variance(x):
     return [sum(x[n]) / x.shape[0] for n in range(x.shape[1])]
 
 
+'''Gera o atributo desvio padrão'''
+
+
 def standard_deviation(x):
     if len(x.shape) == 1:
         return math.sqrt(variance(x))
 
     return [math.sqrt(variance(x[n])) for n in range(x.shape[1])]
+
+
+'''Gera o atributo skewness'''
 
 
 def skewness(x):
@@ -54,11 +61,17 @@ def skewness(x):
     return [sum(((x[n] - mean(x[n])) / standard_deviation(x[n])) ** 3) / x.shape[0] for n in range(x.shape[1])]
 
 
+'''Gera o atributo Kurtosis'''
+
+
 def kurtosis(x):
     if len(x.shape) == 1:
         return sum(((x - mean(x)) / standard_deviation(x)) ** 4) / len(x)
 
     return [sum(((x[n] - mean(x[n])) / standard_deviation(x[n])) ** 4) / x.shape[0] for n in range(x.shape[1])]
+
+
+'''Normaliza os dados (0, 1)'''
 
 
 def normalize_min_max(dat):
@@ -74,15 +87,14 @@ def normalize_min_max(dat):
     return x
 
 
-def normalize_zscore(x):
-    if len(x.shape) == 1:
-        return stats.zscore(x)
-
-    return [stats.zscore(x[n]) for n in range(x.shape[0])]
+'''Calculo da distância entre dois elementos nesse universo 5d'''
 
 
 def distancia(test, atr_tr):
     return math.sqrt(sum([(test[i] - atr_tr[i]) ** 2 for i in range(len(test))]))
+
+
+'''Calcula e retorna quais são os k vizinhos mais próximos'''
 
 
 def k_vizinhos(n_k, dists):
@@ -98,6 +110,9 @@ def k_vizinhos(n_k, dists):
     return k_v
 
 
+'''Função de classificação, classifica uma amostra de acordo com a base de treino e os k vizinhos mais próximos'''
+
+
 def classifica(test, atributos_tr, classes_tr, n_k):
     dists = [distancia(test, atr_tr) for atr_tr in atributos_tr]
     k_vi = k_vizinhos(n_k, dists)
@@ -107,6 +122,9 @@ def classifica(test, atributos_tr, classes_tr, n_k):
         return 2
     else:
         return None
+
+
+'''Função principal de execução'''
 
 
 if __name__ == '__main__':
@@ -121,11 +139,6 @@ if __name__ == '__main__':
     atributos_ECG = array([mean(ECG), variance(ECG), standard_deviation(ECG), skewness(ECG), kurtosis(ECG)])
     atributos_Audio = array([mean(Audio), variance(Audio), standard_deviation(Audio), skewness(Audio), kurtosis(Audio)])
 
-    '''Normalização dos atributos'''
-    '''
-    atributos_ECG = array(normalize_zscore(atributos_ECG)).T
-    atributos_Audio = array(normalize_zscore(atributos_Audio)).T
-    '''
     atributos = ones(100 * 5).reshape(100, 5)
     atributos[:50] = atributos_ECG.T
     atributos[50:] = atributos_Audio.T
@@ -154,6 +167,8 @@ if __name__ == '__main__':
     '''K-fold com 10 grupos'''
     for k_f in arange(10):
 
+        '''Separa os dados de treino e teste de acordo com cada rodada do k-fold'''
+
         atributos_teste = atributos[k_f * 10: (k_f + 1) * 10]
         classes_teste = classes[k_f * 10: (k_f + 1) * 10]
 
@@ -169,7 +184,13 @@ if __name__ == '__main__':
             classes_treino[:k_f * 10] = classes[:k_f * 10]
             classes_treino[k_f * 10:] = classes[(k_f + 1) * 10:]
 
+        '''Classifica as amostras de teste'''
+
         result = [classifica(tst, atributos_treino, classes_treino, k) for tst in atributos_teste]
+
+        '''Verifica a taxa de erro para as amostras de teste'''
+
         k_f_results[k_f] = sum([False == i for i in classes_teste == result]) / len(classes_teste)
 
+    '''Imprime na saída a taxa de erro media das rodadas do k-fold'''
     print('\nK = '+str(k)+'\nK-fold com 10 grupos\n'+'Taxa de erro: '+str(mean(k_f_results)))
