@@ -10,6 +10,14 @@ from sklearn.utils import shuffle
 '''Jeferson Pontes'''
 '''https://github.com/Jefersonpontes13'''
 
+''' Classificador K-NN para base de dados de sinais de ECG(Eletrocardiograma) e Áudio.
+    Atributos gerados com os sinais:
+    'mean'
+    'variance'
+    'standard_deviation'
+    'skewness'
+    'kurtosis'
+'''
 
 '''Atributo: Média'''
 
