@@ -198,7 +198,8 @@ if __name__ == '__main__':
 
         '''Verifica a taxa de erro para as amostras de teste'''
 
-        k_f_results[k_f] = sum([False == i for i in classes_teste == result]) / len(classes_teste)
+        k_f_results[k_f] = sum([0 == i for i in [classes_teste[i] == result[i] for i in
+                                                 range(len(classes_teste))]]) / len(classes_teste)
 
     '''Imprime na saída a taxa de erro media das rodadas do k-fold'''
     print('\nK = '+str(k)+'\nK-fold com 10 grupos\n'+'Taxa de erro: '+str(mean(k_f_results)))
